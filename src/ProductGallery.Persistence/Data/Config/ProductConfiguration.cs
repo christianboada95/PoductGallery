@@ -12,14 +12,17 @@ internal class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.ToTable("Products");
         builder.HasKey(p => p.Id);
 
-        //builder.HasOne(p => p.Category).WithMany(p => p.Products).HasForeignKey(p => p.Id);
+        builder.HasOne(p => p.Category)         // Producto tiene una categoría
+            .WithMany(p => p.Products)          // Categoria puede tener muchos productos
+            .HasForeignKey(p => p.CategoryId);  // A través del identificador
 
         builder.Property(p => p.Name)
             .HasMaxLength(50)
             .IsRequired();
 
         builder.Property(p => p.Description)
-            .HasMaxLength(250);
+            .HasMaxLength(250)
+            .IsRequired(false);
 
         builder.Property(p => p.Image)
             .HasMaxLength(250);
