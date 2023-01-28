@@ -2,5 +2,8 @@
 
 public class EntityBase
 {
-    public Guid Id { get; set; }
+    public virtual Guid Id { get; set; } = Guid.NewGuid();
+
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime? UpdateAt { get; set; }
 }

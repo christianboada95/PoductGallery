@@ -31,3 +31,9 @@ public class ErrorHandlerMiddleware
         }
     }
 }
+
+public static class ErrorHandlerExtension
+{
+    public static IApplicationBuilder UseErrorHandlerMiddleware(this IApplicationBuilder app) =>
+        app.UseMiddleware<ErrorHandlerMiddleware>();
+}

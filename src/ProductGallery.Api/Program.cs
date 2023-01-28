@@ -1,3 +1,4 @@
+using ProductGallery.Api.Middlewares;
 using ProductGallery.Application;
 using ProductGallery.Persistence;
 
@@ -31,6 +32,8 @@ public class Program
 
         app.UseAuthorization();
 
+        app.UseWelcomePage();
+        app.UseErrorHandlerMiddleware();
 
         app.MapControllers();
 

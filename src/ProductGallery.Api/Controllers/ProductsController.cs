@@ -1,4 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using ProductGallery.Application.DataTransferObjects.Requests;
+using ProductGallery.Application.DataTransferObjects.Responses;
+using ProductGallery.Application.Interfaces;
+using ProductGallery.Domain.Contracts;
+using ProductGallery.Domain.Entities;
 
 namespace ProductGallery.Api.Controllers;
 
@@ -7,15 +12,48 @@ namespace ProductGallery.Api.Controllers;
 public class ProductsController : ControllerBase
 {
     private readonly ILogger<ProductsController> _logger;
+    private readonly IRepository<Product> _repository;
+    private readonly IInventoryService _inventoryService;
 
-    public ProductsController(ILogger<ProductsController> logger)
+    public ProductsController(ILogger<ProductsController> logger,
+        IRepository<Product> repository,
+        IInventoryService inventoryService)
     {
         _logger = logger;
+        _repository = repository;
+        _inventoryService = inventoryService;
+    }
+
+    [HttpPost(Name = "CreateProduct")]
+    public async Task<ActionResult<CreateProductResponse>> Post(CreateProductRequest request)
+    {
+        if (request.Name == null)
+        {
+            return BadRequest();
+        }
+
+        var newProduct = new Product(request.Name, request.Description);
+        var createdItem = await _repository.AddAsync(newProduct);
+
+        var response = new CreateProductResponse
+        (
+          id: createdItem.Id.ToString(),
+          name: createdItem.Name
+        );
+
+        return Ok(response);
     }
 
     [HttpGet(Name = "GetProducts")]
     public async Task<IActionResult> Get()
     {
-        return Ok("Product List");
+        var products = await _repository.ListAsync();
+        var response = new ProductListResponse()
+        {
+            Products = products.Select(x =>
+                new ProductRecord(x.Id.ToString(), x.Name, x.Description)).ToList()
+        };
+
+        return Ok(response);
     }
 }
