@@ -32,9 +32,9 @@ public class ProductsController : ControllerBase
             return BadRequest();
         }
 
-        var newProduct = new Product(request.Name, request.Description);
-        var createdItem = await _repository.AddAsync(newProduct);
-
+        //var newProduct = new Product(request.Name, request.Description);
+        //var createdItem = await _repository.AddAsync(newProduct);
+        var createdItem = await _inventoryService.AddProduct(request.Name, request.Description, request.Category);
         var response = new CreateProductResponse
         (
           id: createdItem.Id.ToString(),

@@ -20,6 +20,11 @@ public class Product : EntityBase
         Description = description;
     }
 
+    public void AddCategory(Category category)
+    {
+        CategoryId = category.Id;
+    }
+
     public void AddCategory(string categoryId)
     {
         CategoryId = Guid.Parse(categoryId);

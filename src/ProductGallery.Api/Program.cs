@@ -32,7 +32,7 @@ public class Program
 
         app.UseAuthorization();
 
-        app.UseWelcomePage();
+        //app.UseWelcomePage();
         app.UseErrorHandlerMiddleware();
 
         app.MapControllers();

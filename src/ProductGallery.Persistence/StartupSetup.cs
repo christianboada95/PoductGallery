@@ -16,6 +16,7 @@ public static class StartupSetup
 
         #region Repositories
         services.AddScoped<IRepository<Product>, ProductRepository>();
+        services.AddScoped<IRepository<Category>, CategoryRepository>();
         #endregion
 
         return services;
