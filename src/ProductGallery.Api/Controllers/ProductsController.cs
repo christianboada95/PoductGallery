@@ -25,7 +25,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPost(Name = "CreateProduct")]
-    public async Task<ActionResult<CreateProductResponse>> Post(CreateProductRequest request)
+    public async Task<ActionResult<CreateProductResponse>> Post([FromForm] CreateProductRequest request)
     {
         if (request.Name == null)
         {
@@ -34,7 +34,7 @@ public class ProductsController : ControllerBase
 
         //var newProduct = new Product(request.Name, request.Description);
         //var createdItem = await _repository.AddAsync(newProduct);
-        var createdItem = await _inventoryService.AddProduct(request.Name, request.Description, request.Category);
+        var createdItem = await _inventoryService.AddProduct(request.Name, request.Description, request.Category, request.Image);
         var response = new CreateProductResponse
         (
           id: createdItem.Id.ToString(),

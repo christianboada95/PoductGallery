@@ -8,7 +8,7 @@ public class Product : EntityBase
 
     public string Name { get; set; }
     public string? Description { get; set; }
-    public string? Image { get; set; }
+    public string? ImageUrl { get; set; }
 
     public virtual Category? Category { get; set; }
 
@@ -32,6 +32,6 @@ public class Product : EntityBase
 
     public void AddImage(string imageUrl)
     {
-        Image = imageUrl;
+        ImageUrl = imageUrl;
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace ProductGallery.Domain.Commom;
 
-public class EntityBase
+public abstract class EntityBase
 {
     public virtual Guid Id { get; set; } = Guid.NewGuid();
 

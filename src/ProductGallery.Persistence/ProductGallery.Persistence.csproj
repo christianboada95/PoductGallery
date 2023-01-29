@@ -20,6 +20,10 @@
 
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
+    <Folder Include="Storages\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Storages\" />
+  </ItemGroup>
 </Project>

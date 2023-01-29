@@ -24,7 +24,7 @@ internal class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasMaxLength(250)
             .IsRequired(false);
 
-        builder.Property(p => p.Image)
+        builder.Property(p => p.ImageUrl)
             .HasMaxLength(250);
 
         builder.HasData(new ProductSeeder());
