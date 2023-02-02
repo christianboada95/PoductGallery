@@ -1,8 +1,10 @@
 ﻿namespace ProductGallery.Application.DataTransferObjects.Responses;
 
-public class ProductListResponse
+public class ProductListResponse : PagedResponse<List<ProductRecord>>
 {
-    public List<ProductRecord> Products { get; set; } = new();
+    public ProductListResponse(List<ProductRecord> data, int pageNumber, int pageSize) : base(data, pageNumber, pageSize)
+    {
+    }
 }
 
 public record ProductRecord(string Id, string Name, string Description);

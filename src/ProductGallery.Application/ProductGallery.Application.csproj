@@ -7,8 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Mappings\" />
-    <Folder Include="Filters\" />
     <Folder Include="Handlers\" />
   </ItemGroup>
 
@@ -20,10 +18,12 @@
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.24" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ProductGallery.Domain\ProductGallery.Domain.csproj" />
+    <ProjectReference Include="..\ProductGallery.SharedKernel\ProductGallery.SharedKernel.csproj" />
   </ItemGroup>
 
 </Project>

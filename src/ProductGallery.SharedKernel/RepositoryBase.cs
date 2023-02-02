@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProductGallery.Domain.Commom;
 using ProductGallery.Domain.Contracts;
+using System.Linq.Expressions;
 
 namespace ProductGallery.SharedKernel
 {
@@ -8,7 +9,7 @@ namespace ProductGallery.SharedKernel
     {
         private readonly DbContext dbContext;
 
-        public RepositoryBase(DbContext dbContext)
+        protected RepositoryBase(DbContext dbContext)
         {
             this.dbContext = dbContext;
         }
@@ -37,6 +38,11 @@ namespace ProductGallery.SharedKernel
         public async Task<List<T>> ListAsync(CancellationToken cancellationToken = default)
         {
             return await dbContext.Set<T>().ToListAsync(cancellationToken);
+        }
+
+        public async Task<List<T>> ListAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+        {
+            return await dbContext.Set<T>().Where(predicate).ToListAsync(cancellationToken);
         }
 
         public async Task UpdateAsync(T entity, CancellationToken cancellationToken = default)

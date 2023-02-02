@@ -1,6 +1,4 @@
-﻿using System;
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
+﻿using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Configuration;
 using ProductGallery.Domain.Contracts;
 using ProductGallery.Domain.Entities;
@@ -23,6 +21,12 @@ public class ImageStorage : BlobStorageBase, IFileStorage<ProductImage>
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// Return Blob Uploaded file URL
+    /// </summary>
+    /// <param name="file"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async Task<string> SaveFileAsync(ProductImage file, CancellationToken cancellationToken = default)
     {
         await blobContainerClient.CreateIfNotExistsAsync();
@@ -30,7 +34,7 @@ public class ImageStorage : BlobStorageBase, IFileStorage<ProductImage>
         var blobContentInfo = await UploadBinaryAsync(file.FileName, file.DocumentBytes);
 
         var blobClient = blobContainerClient.GetBlobClient(file.FileName);
-        BlobHttpHeaders blobHttpHeaders = new() { ContentType = file.ContentType };
+        BlobHttpHeaders blobHttpHeaders = new() { ContentType = file.ContentType, ContentHash = file.GetFileHash() };
         blobClient.SetHttpHeaders(blobHttpHeaders);
         return blobClient.Uri.AbsoluteUri;
     }

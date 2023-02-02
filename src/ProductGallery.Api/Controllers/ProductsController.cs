@@ -1,8 +1,9 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using ProductGallery.Application.DataTransferObjects.Requests;
 using ProductGallery.Application.DataTransferObjects.Responses;
+using ProductGallery.Application.Filters;
 using ProductGallery.Application.Interfaces;
-using ProductGallery.Domain.Contracts;
 using ProductGallery.Domain.Entities;
 
 namespace ProductGallery.Api.Controllers;
@@ -12,15 +13,15 @@ namespace ProductGallery.Api.Controllers;
 public class ProductsController : ControllerBase
 {
     private readonly ILogger<ProductsController> _logger;
-    private readonly IRepository<Product> _repository;
+    private readonly IMapper _mapper;
     private readonly IInventoryService _inventoryService;
 
     public ProductsController(ILogger<ProductsController> logger,
-        IRepository<Product> repository,
+        IMapper mapper,
         IInventoryService inventoryService)
     {
         _logger = logger;
-        _repository = repository;
+        _mapper = mapper;
         _inventoryService = inventoryService;
     }
 
@@ -31,10 +32,10 @@ public class ProductsController : ControllerBase
         {
             return BadRequest();
         }
-
         //var newProduct = new Product(request.Name, request.Description);
         //var createdItem = await _repository.AddAsync(newProduct);
-        var createdItem = await _inventoryService.AddProduct(request.Name, request.Description, request.Category, request.Image);
+        var productImage = _mapper.Map<ProductImage>(request.Image);
+        var createdItem = await _inventoryService.AddProduct(request.Name, request.Description, request.CategoryId, productImage);
         var response = new CreateProductResponse
         (
           id: createdItem.Id.ToString(),
@@ -44,16 +45,35 @@ public class ProductsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet(Name = "GetProducts")]
-    public async Task<IActionResult> Get()
+    [HttpPut("{productId}")]
+    public async Task<ActionResult<Product>> Put([FromRoute] Guid productId, [FromForm] UpdateProductRequest request)
     {
-        var products = await _repository.ListAsync();
-        var response = new ProductListResponse()
-        {
-            Products = products.Select(x =>
-                new ProductRecord(x.Id.ToString(), x.Name, x.Description)).ToList()
-        };
+        var productImage = _mapper.Map<ProductImage>(request.Image);
+        var product = await _inventoryService.UpdateProduct(productId,
+            request.Name, request.Description, request.CategoryId, productImage);
+
+        return Ok(product);
+    }
+
+    [HttpDelete("{productId:guid}")]
+    public async Task<ActionResult> Delete([FromRoute] Guid productId)
+    {
+        await _inventoryService.DeleteProduct(productId);
+        return Ok("Product Deleted successfull");
+    }
+
+    [HttpGet(Name = "GetProducts")]
+    public async Task<IActionResult> Get([FromQuery] ListPagedProductRequest request)
+    {
+        QueryFilter filter = new(request.PageIndex, request.PageSize, input: request.FindBy);
+        var products = await _inventoryService.GetProducts(filter, request.OrderBy);
+        var response = new ProductListResponse(
+            products.Select(x =>
+                new ProductRecord(x.Id.ToString(), x.Name, x.Description)).ToList(),
+            filter.PageIndex, filter.PageSize
+        );
 
         return Ok(response);
     }
 }
+

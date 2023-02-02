@@ -1,5 +1,4 @@
-﻿using System;
-using Azure.Storage.Blobs;
+﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using ProductGallery.Domain.Contracts;
 
@@ -14,6 +13,13 @@ public class BlobStorageBase : IBlobStorage
     {
         this.blobServiceClient = blobServiceClient;
         this.blobContainerClient = blobContainerClient;
+    }
+
+    public async Task<BlobDownloadResult> DownloadBinaryAsync(string filename)
+    {
+        BlobClient blobClient = blobContainerClient.GetBlobClient(filename);
+        BlobDownloadResult downloadResult = await blobClient.DownloadContentAsync();
+        return downloadResult;
     }
 
     public async Task<BlobContentInfo> UploadBinaryAsync(string filename, byte[] bytes)

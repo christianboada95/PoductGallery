@@ -7,14 +7,12 @@ public class Product : EntityBase
     public Guid CategoryId { get; set; }
 
     public string Name { get; set; }
-    public string? Description { get; set; }
+    public string Description { get; set; }
     public string? ImageUrl { get; set; }
 
     public virtual Category? Category { get; set; }
 
-    public Product(string name) => Name = name;
-
-    public Product(string name, string description)
+    public Product(string name, string description = "")
     {
         Name = name;
         Description = description;
@@ -25,10 +23,6 @@ public class Product : EntityBase
         CategoryId = category.Id;
     }
 
-    public void AddCategory(string categoryId)
-    {
-        CategoryId = Guid.Parse(categoryId);
-    }
 
     public void AddImage(string imageUrl)
     {

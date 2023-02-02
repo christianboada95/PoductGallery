@@ -1,7 +1,7 @@
-﻿using Azure.Storage.Blobs;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ProductGallery.Application.Interfaces;
 using ProductGallery.Domain.Contracts;
 using ProductGallery.Domain.Entities;
 using ProductGallery.Infrastructure.Data;
@@ -19,7 +19,7 @@ public static class StartupSetup
         services.AddBlobStorage(config.GetConnectionString("BlobStorage")!);
 
         #region Repositories
-        services.AddScoped<IRepository<Product>, ProductRepository>();
+        services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<IRepository<Category>, CategoryRepository>();
         #endregion
 

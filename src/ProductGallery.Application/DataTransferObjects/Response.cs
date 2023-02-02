@@ -3,7 +3,12 @@
 public class Response<T>
 {
     public T? Data { get; set; }
-    public string Message { get; set; }
+    public string Message { get; set; } = string.Empty;
+
+    public Response(T? data)
+    {
+        Data = data;
+    }
 
     public Response(string message)
     {
