@@ -12,6 +12,9 @@ public class Product : EntityBase
 
     public virtual Category? Category { get; set; }
 
+#pragma warning disable CS8618 // Required by Entity Framework
+    public Product() { }
+
     public Product(string name, string description = "")
     {
         Name = name;

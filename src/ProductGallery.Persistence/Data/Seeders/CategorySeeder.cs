@@ -1,4 +1,5 @@
-﻿using ProductGallery.Domain.Entities;
+﻿using Bogus;
+using ProductGallery.Domain.Entities;
 using System.Collections;
 
 namespace ProductGallery.Persistence.Data.Seeders;
@@ -18,6 +19,14 @@ internal class CategorySeeder : IEnumerable<Category>
 
     public IEnumerator<Category> GetEnumerator()
     {
+        for (int i = 0; i < 10; i++)
+        {
+            Category category = new Faker<Category>()
+                .RuleFor(p => p.Name, f => f.Commerce.Categories(1)[0]);
+
+            categorylist.Add(category);
+        }
+
         return categorylist.GetEnumerator();
     }
 

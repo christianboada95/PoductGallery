@@ -8,6 +8,9 @@ public class Category : EntityBase
 
     public virtual ICollection<Product>? Products { get; set; }
 
+#pragma warning disable CS8618 // Required by Entity Framework
+    public Category() { }
+
     public Category(string name)
     {
         Name = name;
