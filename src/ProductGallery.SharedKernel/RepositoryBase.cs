@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProductGallery.Domain.Commom;
 using ProductGallery.Domain.Contracts;
-using System.Linq.Expressions;
 
 namespace ProductGallery.SharedKernel
 {
@@ -40,9 +39,26 @@ namespace ProductGallery.SharedKernel
             return await dbContext.Set<T>().ToListAsync(cancellationToken);
         }
 
-        public async Task<List<T>> ListAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+        public async Task<List<T>> ListAsync(ISpecification<T> specification, CancellationToken cancellationToken = default)
         {
-            return await dbContext.Set<T>().Where(predicate).ToListAsync(cancellationToken);
+            var query = specification.Includes
+                .Aggregate(dbContext.Set<T>().AsQueryable(),
+                    (current, include) => current.Include(include));
+
+            // Aplica Skip si esta en la especificación
+            if (specification.Skip != null && specification.Skip != 0)
+            {
+                query = query.Skip(specification.Skip.Value);
+            }
+
+            // Aplica Take si esta en la especificación
+            if (specification.Take != null)
+            {
+                query = query.Take(specification.Take.Value);
+            }
+
+            return await query.Where(specification.Criteria)
+                .ToListAsync(cancellationToken);
         }
 
         public async Task UpdateAsync(T entity, CancellationToken cancellationToken = default)

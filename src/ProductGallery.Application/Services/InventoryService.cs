@@ -1,11 +1,11 @@
 ﻿using ProductGallery.Application.Filters;
 using ProductGallery.Application.Interfaces;
+using ProductGallery.Application.Specifications;
+using ProductGallery.Application.Utilities;
 using ProductGallery.Domain.Contracts;
 using ProductGallery.Domain.Entities;
 using ProductGallery.Domain.Exceptions;
 using System.Linq.Dynamic.Core;
-using System.Reflection;
-using System.Text;
 
 namespace ProductGallery.Application.Services;
 
@@ -56,34 +56,18 @@ internal class InventoryService : IInventoryService
     public async Task<List<Product>> GetProducts(QueryFilter filter, string orderByQueryString)
     {
         // Filtro
-        var products = await _productRepository.PagedListAsync(
+        var spec = new ProductFilterPaginatedSpecification(
             skip: (filter.PageIndex - 1) * filter.PageSize,
-            take: filter.PageSize);
+            take: filter.PageSize,
+            input: filter.FindBy);
+
+        var products = await _productRepository.ListAsync(spec);
 
         // Orden
         if (string.IsNullOrWhiteSpace(orderByQueryString))
             return products.OrderBy(x => x.Name).ToList();
 
-        var orderParams = orderByQueryString.Trim().Split(',');
-        var propertyInfos = typeof(Product).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-        var orderQueryBuilder = new StringBuilder();
-        foreach (var param in orderParams)
-        {
-            if (string.IsNullOrWhiteSpace(param))
-                continue;
-            var propertyFromQueryName = param.Split(" ")[0];
-            var objectProperty = propertyInfos.FirstOrDefault(pi => pi.Name.Equals(propertyFromQueryName, StringComparison.InvariantCultureIgnoreCase));
-            if (objectProperty == null)
-                continue;
-            var sortingOrder = param.EndsWith(" desc") ? "descending" : "ascending";
-            orderQueryBuilder.Append($"{objectProperty.Name.ToString()} {sortingOrder}, ");
-        }
-        var orderQuery = orderQueryBuilder.ToString().TrimEnd(',', ' ');
-
-        if (string.IsNullOrWhiteSpace(orderQuery))
-            return products.OrderBy(x => x.Name).ToList();
-
-        return products.AsQueryable().OrderBy(orderQuery).ToList();
+        return products.AsQueryable().ApplySort(orderByQueryString).ToList();
     }
 
     public async Task<Product> UpdateProduct(Guid productId, string name, string description, Guid categoryId, ProductImage image)

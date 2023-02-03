@@ -9,17 +9,18 @@ public abstract class SpecificationBase<T> : ISpecification<T>
     {
         Criteria = criteria;
     }
-    public Expression<Func<T, bool>> Criteria { get; }
-    public List<Expression<Func<T, object>>> Includes { get; } = new List<Expression<Func<T, object>>>();
-    public List<string> IncludeStrings { get; } = new List<string>();
 
+    public Expression<Func<T, bool>> Criteria { get; }
+    public int? Take { get; internal set; } = null;
+    public int? Skip { get; internal set; } = null;
+    public List<Expression<Func<T, object>>> Includes { get; } = new List<Expression<Func<T, object>>>();
+
+    protected virtual void AddTake(int take) => Take = take;
+    protected virtual void AddSkip(int skip) => Skip = skip;
     protected virtual void AddInclude(Expression<Func<T, object>> includeExpression)
     {
         Includes.Add(includeExpression);
     }
-    // string-based includes allow for including children of children, e.g. Basket.Items.Product
-    protected virtual void AddInclude(string includeString)
-    {
-        IncludeStrings.Add(includeString);
-    }
+
+
 }
