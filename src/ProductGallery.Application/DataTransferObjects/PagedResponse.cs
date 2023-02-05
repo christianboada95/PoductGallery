@@ -7,12 +7,21 @@ public class PagedResponse<T> : Response<T>
     public int TotalPages { get; set; }
     public int TotalRecords { get; set; }
 
-
     public PagedResponse(T data, int pageNumber, int pageSize)
         : base(data)
     {
-        this.PageNumber = pageNumber;
-        this.PageSize = pageSize;
-        this.Data = data;
+        PageNumber = pageNumber;
+        PageSize = pageSize;
+        Data = data;
+    }
+
+    public PagedResponse(T data, int pageNumber, int pageSize, int totalRecords)
+        : base(data)
+    {
+        PageNumber = pageNumber;
+        PageSize = pageSize;
+        Data = data;
+        TotalRecords = totalRecords;
+        TotalPages = totalRecords / pageSize;
     }
 }

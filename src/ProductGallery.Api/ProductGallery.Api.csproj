@@ -19,10 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Extensions\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\ProductGallery.Application\ProductGallery.Application.csproj" />
     <ProjectReference Include="..\ProductGallery.Domain\ProductGallery.Domain.csproj" />
     <ProjectReference Include="..\ProductGallery.Persistence\ProductGallery.Persistence.csproj" />

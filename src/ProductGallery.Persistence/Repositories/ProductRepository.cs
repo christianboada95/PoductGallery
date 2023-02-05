@@ -16,4 +16,9 @@ internal class ProductRepository : RepositoryBase<Product>, IProductRepository
     {
         return _appDbContext.Products.Skip(skip).Take(take).ToListAsync();
     }
+
+    public Task<int> GetTotalProducts()
+    {
+        return _appDbContext.Products.CountAsync();
+    }
 }

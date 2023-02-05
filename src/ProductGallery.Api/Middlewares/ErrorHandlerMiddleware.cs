@@ -1,4 +1,5 @@
-﻿using ProductGallery.Application.DataTransferObjects;
+﻿using MyClean.Application.Common.Models;
+using ProductGallery.Domain.Enums;
 using System.Net;
 
 namespace ProductGallery.Api.Middlewares;
@@ -6,10 +7,12 @@ namespace ProductGallery.Api.Middlewares;
 public class ErrorHandlerMiddleware
 {
     private readonly RequestDelegate _handler;
+    private readonly ILogger<ErrorHandlerMiddleware> _logger;
 
-    public ErrorHandlerMiddleware(RequestDelegate next)
+    public ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMiddleware> logger)
     {
         _handler = next;
+        _logger = logger;
     }
 
     public async Task Invoke(HttpContext context)
@@ -26,8 +29,16 @@ public class ErrorHandlerMiddleware
                 ArgumentNullException => HttpStatusCode.InternalServerError,
                 _ => HttpStatusCode.InternalServerError
             };
+            AppStatusCode errorCode = error switch
+            {
+                ArgumentNullException => AppStatusCode.UnexpectedError,
+                _ => AppStatusCode.UnexpectedError
+            };
+
+            string message = statusCode is (HttpStatusCode)500 ? "Internal Server Error" : error.Message;
             context.Response.StatusCode = (int)statusCode;
-            await context.Response.WriteAsJsonAsync(new Response<string>(error.Message));
+            await context.Response.WriteAsJsonAsync(ErrorResponse.Failure(errorCode, message));
+            _logger.LogError(error, message);
         }
     }
 }
