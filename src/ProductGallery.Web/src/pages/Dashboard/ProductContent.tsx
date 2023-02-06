@@ -9,24 +9,15 @@ import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import { Avatar, IconButton, Pagination, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip } from '@mui/material';
+import { Alert, Avatar, IconButton, Pagination, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip } from '@mui/material';
 import { Product } from '../../models/Product';
 import { useEffect, useState } from 'react';
-import { getProducts } from '../../services/ProductService';
+import { deleteProduct, getProducts } from '../../services/ProductService';
 import { PagedResponse } from '../../models/Response';
-import { isNullOrUndefined } from 'util';
-
-
-const rows: Product[] = [
-    {
-        name: "Frozen yoghurt", description: "Lorem impsun dolor sit amet", category: { name: "lacteos"},
-        imageUrl: "https://myclean.blob.core.windows.net/productimages/Toon.png",
-        createdAt: new Date("2023-01-29 17:56:57.8511500")
-    }
-];
-
 
 export default function ProductContent() {
+    const [open, setOpen] = React.useState(false);
+
     const [serviceData, setServiceData] = useState<PagedResponse<Product[]>>();
     const [pageIndex, setPageIndex] = useState<number>(0);
     const [pageSize, setPageSize] = useState<number>(10);
@@ -60,6 +51,19 @@ export default function ProductContent() {
         getProducts(pageIndex, pageSize, input).then((res) => setServiceData(res.data));
         setFilter(input);
     };
+
+    const handleDeleteRow = (
+        productId: string
+    ) => {
+        deleteProduct(productId)
+            .then((res) => {
+                setOpen(true);
+                serviceData?.data.forEach((item, index) => {
+                    if (item.id === productId) serviceData?.data.splice(index, 1);
+                });
+            })
+    };
+
     const isEmpty = (str: string) => (!str?.length);
     return (
         <Paper sx={{ maxWidth: 936, margin: 'auto', overflow: 'hidden' }}>
@@ -131,7 +135,7 @@ export default function ProductContent() {
                                                 </IconButton>
                                             </Tooltip>
                                             <Tooltip title="Delete">
-                                                <IconButton aria-label="delete">
+                                                <IconButton aria-label="delete" onClick={() => handleDeleteRow(row.id)}>
                                                     <DeleteIcon />
                                                 </IconButton>
                                             </Tooltip>
@@ -143,13 +147,20 @@ export default function ProductContent() {
                     </Table>
                 <TablePagination
                     component="div"
-                    count={100}
+                    count={serviceData?.totalRecords ?? 0}
                     page={pageIndex}
                     rowsPerPage={pageSize}
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
-                </TableContainer>
+            </TableContainer>
+
+            <Snackbar
+                open={open}
+                autoHideDuration={6000}
+                message="Product Deleted successfull"
+                onClose={() => setOpen(false)}
+            />
         </Paper>
     );
 }

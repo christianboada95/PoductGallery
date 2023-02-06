@@ -2,7 +2,7 @@ import { Url } from "url";
 import { Category } from "./Category";
 
 export interface Product{
-    id?: string,
+    id: string,
     name: string,
     description: string,
     category: Category,
