@@ -9,14 +9,16 @@ import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import { Alert, Avatar, IconButton, Pagination, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip } from '@mui/material';
+import { Alert, Avatar, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Pagination, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip } from '@mui/material';
 import { Product } from '../../models/Product';
 import { useEffect, useState } from 'react';
 import { deleteProduct, getProducts } from '../../services/ProductService';
 import { PagedResponse } from '../../models/Response';
+import ProductForm from '../../components/FormModal';
 
 export default function ProductContent() {
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
 
     const [serviceData, setServiceData] = useState<PagedResponse<Product[]>>();
     const [pageIndex, setPageIndex] = useState<number>(0);
@@ -93,8 +95,10 @@ export default function ProductContent() {
                         </Grid>
 
                         <Grid item>
-                            <Button variant="contained" sx={{ mr: 1 }}>
-                                Add user
+                            <Button variant="contained" sx={{ mr: 1 }}
+                                onClick={() => setModalOpen(true)}
+                            >
+                                Add Product
                             </Button>
                         </Grid>
                     </Grid>
@@ -161,6 +165,12 @@ export default function ProductContent() {
                 message="Product Deleted successfull"
                 onClose={() => setOpen(false)}
             />
+
+            <Dialog open={modalOpen} onClose={() => setModalOpen(false)}>
+                <ProductForm title="Create Product" />
+                
+            </Dialog>
+            
         </Paper>
     );
 }
